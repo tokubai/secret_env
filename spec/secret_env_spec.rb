@@ -2,6 +2,18 @@ require 'spec_helper'
 
 describe SecretEnv do
   describe '.load' do
+    before do
+      expect(YAML).to receive(:load_file).with('config/secret_env.yml').and_return(yml)
+    end
+
+    let(:yml) do
+      {
+        'env' => {
+          'PASSWORD' => 'awesome_pass'
+        }
+      }
+    end
+
     after do
       ENV['PASSWORD'] = nil
     end
