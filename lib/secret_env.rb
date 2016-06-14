@@ -7,7 +7,17 @@ module SecretEnv
   def self.load
     env = YAML.load_file(SECRETS_FILE).fetch('env')
     env.each do |key, value|
-      ENV[key] = value
+      record = Record.new(key: key, value: value)
+      ENV[record.key] = record.value
+    end
+  end
+
+  class Record
+    attr_reader :key, :value
+
+    def initialize(key:, value:)
+      @key = key
+      @value = value
     end
   end
 end
