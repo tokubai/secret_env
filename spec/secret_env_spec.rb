@@ -9,7 +9,7 @@ describe SecretEnv do
     let(:yml) do
       {
         'env' => {
-          'PASSWORD' => 'awesome_pass'
+          'PASSWORD' => '#{awesome_pass}'
         }
       }
     end
@@ -23,7 +23,7 @@ describe SecretEnv do
         SecretEnv.load
       }.to change {
         ENV['PASSWORD']
-      }.from(nil).to('awesome_pass')
+      }.from(nil).to('#{awesome_pass}')
     end
   end
 end
