@@ -67,3 +67,5 @@ module SecretEnv
     end
   end
 end
+
+require 'secret_env/rails' if defined?(Rails)
