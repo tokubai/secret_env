@@ -9,8 +9,10 @@ describe SecretEnv do
 
     let(:yml) do
       {
-        'env' => {
-          'PASSWORD' => '#{awesome_pass}'
+        'development' => {
+          'env' => {
+            'PASSWORD' => '#{awesome_pass}'
+          }
         }
       }
     end
@@ -30,9 +32,11 @@ describe SecretEnv do
     context 'with credstash' do
       let(:yml) do
         {
-          'storage' => { 'type' => 'credstash' },
-          'env' => {
-            'PASSWORD' => '#{awesome_pass}'
+          'development' => {
+            'storage' => { 'type' => 'credstash' },
+            'env' => {
+              'PASSWORD' => '#{awesome_pass}'
+            }
           }
         }
       end
