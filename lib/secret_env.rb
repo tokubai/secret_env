@@ -10,9 +10,9 @@ module SecretEnv
     storage = if config['storage']
                 case config['storage'].fetch('type')
                 when 'plain'
-                  Storage::Plain.new
+                  Storage::Plain.new(namespace: config['storage']['namespace'])
                 when 'credstash'
-                  Storage::CredStash.new
+                  Storage::CredStash.new(namespace: config['storage']['namespace'])
                 else
                   raise "Unknown storage type: #{config['storage']['type']}"
                 end
@@ -49,20 +49,32 @@ module SecretEnv
 
   module Storage
     class Base
+      attr_reader :namespace
+
+      def initialize(namespace: '')
+        @namespace = namespace
+      end
+
       def retrieve(secret_key)
         raise NotImplemedError
+      end
+
+      private
+
+      def full_key(secret_key)
+        "#{namespace}#{secret_key}"
       end
     end
 
     class Plain < Base
       def retrieve(secret_key)
-        "#\{#{secret_key}\}"
+        "#\{#{full_key(secret_key)}\}"
       end
     end
 
     class CredStash < Base
       def retrieve(secret_key)
-        ::CredStash.get(secret_key)
+        ::CredStash.get(full_key(secret_key))
       end
     end
   end

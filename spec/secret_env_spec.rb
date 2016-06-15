@@ -63,6 +63,31 @@ describe SecretEnv do
           ENV['PASSWORD']
         }.from(nil).to('credstash')
       end
+
+      context 'with namespace' do
+        let(:yml) do
+          {
+            'development' => {
+              'storage' => {
+                'type' => 'credstash',
+                'namespace' => 'myapp.development.'
+              },
+              'env' => {
+                'PASSWORD' => '#{awesome_pass}'
+              }
+            }
+          }
+        end
+
+        it 'retrieve from credstash with prefix' do
+          expect(::CredStash).to receive(:get).with('myapp.development.awesome_pass').and_return('credstash')
+          expect {
+            SecretEnv.load
+          }.to change {
+            ENV['PASSWORD']
+          }.from(nil).to('credstash')
+        end
+      end
     end
   end
 end
