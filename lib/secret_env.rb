@@ -20,7 +20,7 @@ module SecretEnv
                 Storage::Plain.new
               end
 
-    config.fetch('env').each do |key, raw_value|
+    Array(config.fetch('env')).each do |key, raw_value|
       record = Record.new(key: key, raw_value: raw_value, storage: storage)
       ENV[record.key] = record.value
     end

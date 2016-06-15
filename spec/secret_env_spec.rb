@@ -29,6 +29,20 @@ describe SecretEnv do
       }.from(nil).to('#{awesome_pass}')
     end
 
+    context 'without envs' do
+      let(:yml) do
+        {
+          'development' => {
+            'env' => nil
+          }
+        }
+      end
+
+      it 'does not raise error' do
+        expect { SecretEnv.load }.to_not raise_error
+      end
+    end
+
     context 'with credstash' do
       let(:yml) do
         {
