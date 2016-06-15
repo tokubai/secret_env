@@ -1,4 +1,5 @@
-require "secret_env/version"
+require 'secret_env/version'
+require 'secret_env/storage'
 require 'yaml'
 
 module SecretEnv
@@ -7,18 +8,7 @@ module SecretEnv
   def self.load(env: 'development')
     config = YAML.load_file(SECRETS_FILE).fetch(env)
 
-    storage = if config['storage']
-                case config['storage'].fetch('type')
-                when 'plain'
-                  Storage::Plain.new
-                when 'credstash'
-                  Storage::CredStash.new
-                else
-                  raise "Unknown storage type: #{config['storage']['type']}"
-                end
-              else
-                Storage::Plain.new
-              end
+    storage = Storage.setup(config['storage'])
 
     Array(config.fetch('env')).each do |key, raw_value|
       record = Record.new(key: key, raw_value: raw_value, storage: storage)
@@ -44,26 +34,6 @@ module SecretEnv
         parts << part.gsub(scanner.matched, secret)
       end
       parts.join
-    end
-  end
-
-  module Storage
-    class Base
-      def retrieve(secret_key)
-        raise NotImplemedError
-      end
-    end
-
-    class Plain < Base
-      def retrieve(secret_key)
-        "#\{#{secret_key}\}"
-      end
-    end
-
-    class CredStash < Base
-      def retrieve(secret_key)
-        ::CredStash.get(secret_key)
-      end
     end
   end
 end
