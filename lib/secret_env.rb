@@ -7,18 +7,7 @@ module SecretEnv
   def self.load(env: 'development')
     config = YAML.load_file(SECRETS_FILE).fetch(env)
 
-    storage = if config['storage']
-                case config['storage'].fetch('type')
-                when 'plain'
-                  Storage::Plain.new(namespace: config['storage']['namespace'])
-                when 'credstash'
-                  Storage::CredStash.new(namespace: config['storage']['namespace'])
-                else
-                  raise "Unknown storage type: #{config['storage']['type']}"
-                end
-              else
-                Storage::Plain.new
-              end
+    storage = Storage.setup(config['storage'])
 
     Array(config.fetch('env')).each do |key, raw_value|
       record = Record.new(key: key, raw_value: raw_value, storage: storage)
@@ -48,6 +37,29 @@ module SecretEnv
   end
 
   module Storage
+    class << self
+      def setup(config)
+        if config
+          klass(config.fetch('type')).new(namespace: config['namespace'])
+        else
+          Storage::Plain.new
+        end
+      end
+
+      private
+
+      def klass(type)
+        case type
+        when 'plain'
+          Storage::Plain
+        when 'credstash'
+          Storage::CredStash
+        else
+          raise "Unknown storage type: #{type}"
+        end
+      end
+    end
+
     class Base
       attr_reader :namespace
 
