@@ -33,6 +33,7 @@ module SecretEnv
         secret = @storage.retrieve(secret_key)
         parts << part.gsub(scanner.matched, secret)
       end
+      parts << scanner.rest
       parts.join
     end
   end

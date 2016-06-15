@@ -90,4 +90,20 @@ describe SecretEnv do
       end
     end
   end
+
+  describe SecretEnv::Record do
+    it 'extracts secrets and combines them' do
+      [
+        'none',
+        '#{s}',
+        'pre#{s}',
+        '#{s}suf',
+        'pre#{s}suf',
+        'pre#{s1}mid#{s2}suf',
+      ].each do |raw_value|
+        record = SecretEnv::Record.new(key: 'key', raw_value: raw_value)
+        expect(record.value).to eq raw_value
+      end
+    end
+  end
 end
