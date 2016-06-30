@@ -64,6 +64,15 @@ describe SecretEnv do
         }.from(nil).to('credstash')
       end
 
+      context 'if secret is not found' do
+        it 'raises error' do
+          expect(::CredStash).to receive(:get).with('awesome_pass').and_return(nil)
+          expect {
+            SecretEnv.load
+          }.to raise_error(SecretEnv::KeyNotFound)
+        end
+      end
+
       context 'with namespace' do
         let(:yml) do
           {

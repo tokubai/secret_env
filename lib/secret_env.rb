@@ -31,12 +31,15 @@ module SecretEnv
       while part = scanner.scan_until(/#\{(.*?)\}/)
         secret_key = scanner.matched[2..-2] # Extract "secret" from "\#{secret}"
         secret = @storage.retrieve(secret_key)
+        raise SecretEnv::KeyNotFound unless secret
         parts << part.gsub(scanner.matched, secret)
       end
       parts << scanner.rest
       parts.join
     end
   end
+
+  class KeyNotFound < StandardError; end
 end
 
 require 'secret_env/rails' if defined?(Rails)
