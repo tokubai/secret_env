@@ -119,12 +119,33 @@ describe SecretEnv do
           allow(::CredStash).to receive(:get).with('myapp.development.db_password').and_return('secret_password')
         end
 
+        after do
+          ENV['db_host'] = nil
+          ENV['DATABASE_URL'] = nil
+        end
+
         it 'retrieve from credstash with prefix' do
           expect {
             SecretEnv.load
           }.to change {
             ENV['DATABASE_URL']
           }.from(nil).to('mysql2://db_user:secret_password@db_slave:3306')
+        end
+
+        context 'with env' do
+          before do
+            ENV['db_host'] = 'backup_db'
+          end
+
+          after do
+            ENV['db_host'] = nil
+          end
+
+          it 'overwrites secret with env value' do
+            SecretEnv.load
+            expect(ENV['db_host']).to eq('backup_db')
+            expect(ENV['DATABASE_URL']).to eq('mysql2://db_user:secret_password@backup_db:3306')
+          end
         end
       end
     end

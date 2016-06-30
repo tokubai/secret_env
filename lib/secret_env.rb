@@ -17,7 +17,9 @@ module SecretEnv
     end
 
     env_map.each do |key, record|
-      ENV[record.key] = record.value
+      unless ENV.has_key?(record.key)
+        ENV[record.key] = record.value
+      end
     end
   end
 
@@ -37,7 +39,11 @@ module SecretEnv
       while part = scanner.scan_until(/#\{(.*?)\}/)
         secret_key = scanner.matched[2..-2] # Extract "secret" from "\#{secret}"
 
-        secret = if @dependency.has_key?(secret_key)
+
+        secret = case
+                 when ENV.has_key?(secret_key)
+                   ENV[secret_key]
+                 when @dependency.has_key?(secret_key)
                    # FIXME this code may cause infinite loop
                    @dependency[secret_key].value
                  else
