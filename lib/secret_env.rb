@@ -10,8 +10,13 @@ module SecretEnv
 
     storage = Storage.setup(config['storage'])
 
+    env_map = {}
     Array(config.fetch('env')).each do |key, raw_value|
-      record = Record.new(key: key, raw_value: raw_value, storage: storage)
+      record = Record.new(key: key, raw_value: raw_value, storage: storage, dependency: env_map)
+      env_map[record.key] = record
+    end
+
+    env_map.each do |key, record|
       ENV[record.key] = record.value
     end
   end
@@ -19,10 +24,11 @@ module SecretEnv
   class Record
     attr_reader :key
 
-    def initialize(key:, raw_value:, storage: Storage::Plain.new)
+    def initialize(key:, raw_value:, storage: Storage::Plain.new, dependency: {})
       @key = key
       @raw_value = raw_value
       @storage = storage
+      @dependency = dependency
     end
 
     def value
@@ -30,7 +36,14 @@ module SecretEnv
       parts = []
       while part = scanner.scan_until(/#\{(.*?)\}/)
         secret_key = scanner.matched[2..-2] # Extract "secret" from "\#{secret}"
-        secret = @storage.retrieve(secret_key)
+
+        secret = if @dependency.has_key?(secret_key)
+                   # FIXME this code may cause infinite loop
+                   @dependency[secret_key].value
+                 else
+                   @storage.retrieve(secret_key)
+                 end
+
         raise SecretEnv::KeyNotFound unless secret
         parts << part.gsub(scanner.matched, secret)
       end

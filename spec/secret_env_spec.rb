@@ -97,6 +97,36 @@ describe SecretEnv do
           }.from(nil).to('credstash')
         end
       end
+
+      describe 'key reference' do
+        let(:yml) do
+          {
+            'development' => {
+              'storage' => {
+                'type' => 'credstash',
+                'namespace' => 'myapp.development.'
+              },
+              'env' => {
+                'DATABASE_URL' => 'mysql2://db_user:#{db_password}@#{db_host}:3306',
+                'db_host' => 'db_slave'
+              }
+            }
+          }
+        end
+
+        before do
+          allow(::CredStash).to receive(:get).and_return(nil)
+          allow(::CredStash).to receive(:get).with('myapp.development.db_password').and_return('secret_password')
+        end
+
+        it 'retrieve from credstash with prefix' do
+          expect {
+            SecretEnv.load
+          }.to change {
+            ENV['DATABASE_URL']
+          }.from(nil).to('mysql2://db_user:secret_password@db_slave:3306')
+        end
+      end
     end
   end
 
