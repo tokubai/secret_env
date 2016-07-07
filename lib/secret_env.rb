@@ -28,7 +28,7 @@ module SecretEnv
 
     def initialize(key:, raw_value:, storage: Storage::Plain.new, dependency: {})
       @key = key
-      @raw_value = raw_value
+      @raw_value = raw_value.to_s
       @storage = storage
       @dependency = dependency
     end

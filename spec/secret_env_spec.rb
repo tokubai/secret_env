@@ -11,7 +11,8 @@ describe SecretEnv do
       {
         'development' => {
           'env' => {
-            'PASSWORD' => '#{awesome_pass}'
+            'PASSWORD' => '#{awesome_pass}',
+            'PORT' => 80
           }
         }
       }
@@ -19,6 +20,7 @@ describe SecretEnv do
 
     after do
       ENV['PASSWORD'] = nil
+      ENV['PORT'] = nil
     end
 
     it 'parses and set to ENV' do
@@ -27,6 +29,8 @@ describe SecretEnv do
       }.to change {
         ENV['PASSWORD']
       }.from(nil).to('#{awesome_pass}')
+
+      expect(ENV['PORT']).to eq '80'
     end
 
     context 'without envs' do
