@@ -73,7 +73,7 @@ describe SecretEnv do
           expect(::CredStash).to receive(:get).with('awesome_pass').and_return(nil)
           expect {
             SecretEnv.load
-          }.to raise_error(SecretEnv::KeyNotFound)
+          }.to raise_error(SecretEnv::KeyNotFound, 'awesome_pass')
         end
       end
 

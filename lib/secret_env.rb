@@ -50,7 +50,7 @@ module SecretEnv
                    @storage.retrieve(secret_key)
                  end
 
-        raise SecretEnv::KeyNotFound unless secret
+        raise SecretEnv::KeyNotFound, secret_key unless secret
         parts << part.gsub(scanner.matched, secret)
       end
       parts << scanner.rest
