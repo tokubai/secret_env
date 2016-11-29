@@ -40,7 +40,7 @@ module SecretEnv
         secret_keys = scanner.matched[2..-2] # Extract "secret" from "\#{secret}"
 
         secret = nil
-        secret_keys.split(/\s*\|\|\s*/).each do |secret_key|
+        secret_keys.split("||").map(&:strip).each do |secret_key|
           secret = case
                    when ENV.has_key?(secret_key)
                      ENV[secret_key]

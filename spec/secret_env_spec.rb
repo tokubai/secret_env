@@ -165,7 +165,7 @@ describe SecretEnv do
                 'env' => {
                   'DB_USER' => 'db_user',
                   'DB_USER2' => 'db_user2',
-                  'DATABASE_URL' => 'mysql2://#{DB_USER || DB_USER2}:#{db_password || db_password2}@#{db_host || db_host2}:3306',
+                  'DATABASE_URL' => 'mysql2://#{DB_USER || DB_USER2}:#{db_password || db_password2}@#{ db_host || db_host2}:3306',
                   'db_host' => 'db_slave',
                   'db_host2' => 'db_slave2'
                 }
@@ -198,7 +198,7 @@ describe SecretEnv do
                 },
                 'env' => {
                   'DB_USER2' => 'db_user2',
-                  'DATABASE_URL' => 'mysql2://#{DB_USER || DB_USER2}:#{db_password || db_password2}@#{db_host || db_host2}:3306',
+                  'DATABASE_URL' => 'mysql2://#{DB_USER || DB_USER2}:#{db_password || db_password2}@#{ db_host || db_host2}:3306',
                   'db_host2' => 'db_slave2'
                 }
               }
