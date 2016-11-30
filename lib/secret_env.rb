@@ -37,20 +37,24 @@ module SecretEnv
       scanner = StringScanner.new(@raw_value)
       parts = []
       while part = scanner.scan_until(/#\{(.*?)\}/)
-        secret_key = scanner.matched[2..-2] # Extract "secret" from "\#{secret}"
+        secret_keys = scanner.matched[2..-2] # Extract "secret" from "\#{secret}"
 
+        secret = nil
+        secret_keys.split("||").map(&:strip).each do |secret_key|
+          secret = case
+                   when ENV.has_key?(secret_key)
+                     ENV[secret_key]
+                   when @dependency.has_key?(secret_key)
+                     # FIXME this code may cause infinite loop
+                     @dependency[secret_key].value
+                   else
+                     @storage.retrieve(secret_key)
+                   end
 
-        secret = case
-                 when ENV.has_key?(secret_key)
-                   ENV[secret_key]
-                 when @dependency.has_key?(secret_key)
-                   # FIXME this code may cause infinite loop
-                   @dependency[secret_key].value
-                 else
-                   @storage.retrieve(secret_key)
-                 end
+          break if secret
+        end
 
-        raise SecretEnv::KeyNotFound, secret_key unless secret
+        raise SecretEnv::KeyNotFound, secret_keys unless secret
         parts << part.gsub(scanner.matched, secret)
       end
       parts << scanner.rest

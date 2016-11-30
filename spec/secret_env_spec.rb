@@ -152,6 +152,81 @@ describe SecretEnv do
           end
         end
       end
+
+      describe 'multiple keys' do
+        context 'when retrieve first key' do
+          let(:yml) do
+            {
+              'development' => {
+                'storage' => {
+                  'type' => 'credstash',
+                  'namespace' => 'myapp.development.'
+                },
+                'env' => {
+                  'DB_USER' => 'db_user',
+                  'DB_USER2' => 'db_user2',
+                  'DATABASE_URL' => 'mysql2://#{DB_USER || DB_USER2}:#{db_password || db_password2}@#{ db_host || db_host2}:3306',
+                  'db_host' => 'db_slave',
+                  'db_host2' => 'db_slave2'
+                }
+              }
+            }
+          end
+
+          before do
+            allow(::CredStash).to receive(:get).and_return(nil)
+            allow(::CredStash).to receive(:get).with('myapp.development.db_password').and_return('secret_password')
+            allow(::CredStash).to receive(:get).with('myapp.development.db_password2').and_return('secret_password2')
+          end
+
+          it 'retrieve by second key' do
+            expect {
+              SecretEnv.load
+            }.to change {
+              ENV['DATABASE_URL']
+            }.from(nil).to('mysql2://db_user:secret_password@db_slave:3306')
+          end
+        end
+
+        context 'when retrieve second key' do
+          let(:yml) do
+            {
+              'development' => {
+                'storage' => {
+                  'type' => 'credstash',
+                  'namespace' => 'myapp.development.'
+                },
+                'env' => {
+                  'DB_USER2' => 'db_user2',
+                  'DATABASE_URL' => 'mysql2://#{DB_USER || DB_USER2}:#{db_password || db_password2}@#{ db_host || db_host2}:3306',
+                  'db_host2' => 'db_slave2'
+                }
+              }
+            }
+          end
+
+          before do
+            allow(::CredStash).to receive(:get).and_return(nil)
+            allow(::CredStash).to receive(:get).with('myapp.development.db_password2').and_return('secret_password2')
+          end
+
+          it 'retrieve by first key' do
+            expect {
+              SecretEnv.load
+            }.to change {
+              ENV['DATABASE_URL']
+            }.from(nil).to('mysql2://db_user2:secret_password2@db_slave2:3306')
+          end
+        end
+
+        after do
+          ENV['DB_USER'] = nil
+          ENV['DB_USER2'] = nil
+          ENV['db_host'] = nil
+          ENV['db_host2'] = nil
+          ENV['DATABASE_URL'] = nil
+        end
+      end
     end
   end
 
