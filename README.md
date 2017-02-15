@@ -1,8 +1,32 @@
 # SecretEnv
+SecretEnv is a environment variables manager for rails. SecretEnv can resolve secret variables from storages.
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/secret_env`. To experiment with that code, run `bin/console` for an interactive prompt.
+```yaml
+development:
+  env:
+    AUTH_SECRET: secret
+    DATABASE_URL: 'mysql2://local_user@localhost:3306'
 
-TODO: Delete this and the text above, and describe your gem
+staging:
+  storage:
+    type: credstash
+    namespace: awesome_app.staging.
+  env:
+    AUTH_SECRET: '#{auth_secret}'
+    DATABASE_URL: 'mysql2://db_user:#{db_password}@db-staging:3306/main?read_timeout=10&encoding=utf8'
+
+production:
+  storage:
+    type: credstash
+    namespace: awesome_app.production.
+  env:
+    AUTH_SECRET: '#{auth_secret}'
+    DATABASE_URL: 'mysql2://db_user:#{db_password}@db-production:3306/main?read_timeout=10&encoding=utf8'
+```
+
+## Features
+- Put secrets out of a config file in repository. You can choose backend storages.
+- Configure multi environments via one file.
 
 ## Installation
 
@@ -16,26 +40,28 @@ And then execute:
 
     $ bundle
 
-Or install it yourself as:
+Put config/secret_env.yml in your application.
 
-    $ gem install secret_env
+## Storages
+SecretEnv resolves keys in given namespace. If you set `some.namespace`, SecretEnv finds `some.namespace.super_secret` key from storages.
 
-## Usage
+### type: plain
+This is default storage type. This type does not retrieve secrets, just extract it as full namespaced key.
 
-TODO: Write usage instructions here
+### type: credstash
+This type finds secrets via credstash. You have to bundle 'rcredstash'.
 
-## Development
+```ruby
+gem 'secret_env'
+gem 'rcredstash'
+```
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/secret_env.
+Bug reports and pull requests are welcome on GitHub at https://github.com/adorechic/secret_env.
 
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
