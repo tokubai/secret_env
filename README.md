@@ -1,4 +1,4 @@
-# SecretEnv
+# SecretEnv [![Build Status](https://travis-ci.org/adorechic/secret_env.svg?branch=master)](https://travis-ci.org/adorechic/secret_env)
 SecretEnv is a environment variables manager for rails. SecretEnv can resolve secret variables from storages.
 
 ```yaml
