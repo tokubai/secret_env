@@ -56,6 +56,14 @@ gem 'secret_env'
 gem 'rcredstash'
 ```
 
+### type: file
+This type finds secrets from local file. Put your secrets in config/secret_env.local, and add it to your gitignores.
+
+```
+# config/secret_env.local
+foo=1
+bar=2
+```
 
 ## Contributing
 

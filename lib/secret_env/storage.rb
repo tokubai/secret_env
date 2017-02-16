@@ -17,6 +17,8 @@ module SecretEnv
           Storage::Plain
         when 'credstash'
           Storage::CredStash
+        when 'file'
+          Storage::File
         else
           raise "Unknown storage type: #{type}"
         end
@@ -50,6 +52,19 @@ module SecretEnv
     class CredStash < Base
       def retrieve(secret_key)
         ::CredStash.get(full_key(secret_key))
+      end
+    end
+
+    class File < Base
+      LOCAL_FILE_PATH = 'config/secret_env.local'
+
+      def initialize(namespace: '')
+        super
+        @secrets = Hash[*::File.readlines(LOCAL_FILE_PATH).map(&:strip).map {|line| line.split("=", 2) }.flatten]
+      end
+
+      def retrieve(secret_key)
+        @secrets[full_key(secret_key)]
       end
     end
   end
