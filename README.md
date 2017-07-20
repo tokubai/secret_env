@@ -65,6 +65,10 @@ foo=1
 bar=2
 ```
 
+## CLI
+
+    $ secret_env config/secret_env.yml production your_command --option
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/adorechic/secret_env.

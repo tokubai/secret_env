@@ -3,10 +3,8 @@ require 'secret_env/storage'
 require 'yaml'
 
 module SecretEnv
-  SECRETS_FILE = 'config/secret_env.yml'
-
-  def self.load(env: 'development')
-    config = YAML.load_file(SECRETS_FILE).fetch(env)
+  def self.load(env: 'development', secrets_file: 'config/secret_env.yml')
+    config = YAML.load_file(secrets_file).fetch(env)
 
     storage = Storage.setup(config['storage'])
 
