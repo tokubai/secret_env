@@ -16,6 +16,7 @@ module SecretEnv
         when 'plain'
           Storage::Plain
         when 'credstash'
+          require 'rcredstash'
           Storage::CredStash
         when 'file'
           Storage::File
