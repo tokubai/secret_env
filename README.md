@@ -69,6 +69,11 @@ bar=2
 
     $ secret_env config/secret_env.yml production your_command --option
 
+or
+
+    $ export SECRET_ENV=production
+    $ secret_env config/secret_env.yml your_command --option
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/adorechic/secret_env.
