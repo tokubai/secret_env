@@ -21,6 +21,10 @@ module SecretEnv
     end
   end
 
+  def self.env?(env: 'development', secrets_file: 'config/secret_env.yml')
+    YAML.load_file(secrets_file).key?(env)
+  end
+
   class Record
     attr_reader :key
 

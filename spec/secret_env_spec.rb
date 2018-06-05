@@ -47,6 +47,28 @@ describe SecretEnv do
     end
   end
 
+  describe '.env?' do
+    before do
+      expect(YAML).to receive(:load_file).with('config/secret_env.yml').and_return(yml)
+    end
+
+    let(:yml) do
+      {
+        'development' => {}
+      }
+    end
+
+    it 'exists' do
+      expect(SecretEnv.env?).to be_truthy
+    end
+
+    context 'without envs' do
+      it 'dose not exit' do
+        expect(SecretEnv.env?(env: 'production')).to be_falsey
+      end
+    end
+  end
+
   describe SecretEnv::Record do
     it 'extracts secrets and combines them' do
       [
